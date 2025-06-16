@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verhandlungstyp Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* existing styles remain unchanged */
+        /* (skipping for brevity, your full CSS is already in place) */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://wallpaperaccess.com/full/2441907.jpg') center center/cover no-repeat;
+            background-attachment: fixed;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .fade {
+            opacity: 1;
+            transition: opacity 0.8s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: rgba(255,255,255,0.92);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        /* other existing CSS remains unchanged */
+        .question {
+            display: none;
+            margin-bottom: 32px;
+            text-align: left;
+            background: #e6f4ea;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(96, 169, 23, 0.08);
+            padding: 32px 24px 24px 24px;
+            position: relative;
+            border: 2px solid #60a91722;
+        }
+
+        .question.active {
+            display: block;
+            animation: fadeIn 0.8s;
+        }
+
+        .question label {
+            display: block;
+            margin-bottom: 16px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2d3a3a;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 16px;
+            border: 2px solid #e6f4ea;
+            margin-bottom: 12px;
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+            font-size: 1em;
+            box-shadow: 0 1px 4px rgba(96, 169, 23, 0.04);
+        }
+
+        .answer-option:hover {
+            border: 2px solid #60a917;
+            background: #f6fff9;
+        }
+
+        .answer-option input[type="radio"],
+        .answer-option input[type="checkbox"] {
+            accent-color: #60a917;
+            margin-right: 14px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .answer-option input[type="radio"]:checked + span,
+        .answer-option input[type="checkbox"]:checked + span {
+            color: #60a917;
+            font-weight: 600;
+        }
+
+        .question input[type="text"] {
+            width: 100%;
+            border-radius: 12px;
+            border: 2px solid #e6f4ea;
+            padding: 10px 14px;
+            font-size: 1em;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            background: #fff;
+            transition: border 0.2s;
+        }
+
+        .question input[type="text"]:focus {
+            border: 2px solid #60a917;
+            outline: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .btn {
+            background-color: #60a917;
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 1em;
+            padding: 10px 18px;
+            min-width: 180px;
+        }
+
+        .btn:hover {
+            background-color: #4e8f13;
+        }
+
+        .thank-you {
+            display: none;
+            font-size: 1.5em;
+            color: #60a917;
+            margin-top: 40px;
+        }
+
+        .loader {
+            display: none;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #60a917;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            height: 16px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #60a917; /* Zelena boja */
+            transition: width 0.5s ease;
+        }
+
+        .intro-flex {
+            display: flex;
+            min-height: 70vh;
+            background: none !important;
+            border-radius: 24px;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        .intro-content {
+            flex: 1;
+            padding: 20px 32px 40px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background: rgba(255,255,255,0.85);
+            border-radius: 24px;
+            max-width: 440px;
+            margin: 0 auto;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            min-height: unset;
+            position: relative;
+            text-align: center;
+        }
+
+        .intro-content .main-logo {
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .intro-content .bs-title {
+            margin-bottom: 28px;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .intro-content h1 {
+            font-size: 2.3em;
+            margin-bottom: 28px;
+        }
+        .intro-content p {
+            font-size: 1.18em;
+            margin-bottom: 36px;
+        }
+        .intro-content .btn {
+            margin-top: 12px;
+        }
+        /* Novi stilovi za unutrašnje sekcije */
+        .page-header-content {
+            background: rgba(255,255,255,0.85); /* Poluprovidna podloga */
+            border-radius: 24px;
+            padding: 20px 32px 30px 32px; /* Malo manji donji padding da se priblizi sadrzaju */
+            max-width: 440px;
+            margin: 0 auto 30px auto; /* Razmak između headera i sadržaja sekcije */
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center; /* Centriranje teksta */
+        }
+
+        .page-header-content .main-logo {
+            margin-top: 10px; /* Mali razmak od vrha containera */
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .page-header-content .bs-title {
+            margin-bottom: 15px;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .page-header-content h2 {
+            font-size: 2em; /* Prilagodi velicinu naslova */
+            margin-bottom: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.6s;
+            opacity: 0;
+        }
+
+        @media (max-width: 900px) {
+            .intro-flex .intro-content {
+                top: 0; /* Na manjim ekranima neka bude skroz gore */
+            }
+            .page-header-content {
+                margin-bottom: 20px;
+            }
+            .page-header-content .main-logo {
+                margin-bottom: 15px;
+            }
+            .page-header-content .bs-title {
+                margin-bottom: 10px;
+            }
+        }
+
+        .page-nav {
+            position: fixed;
+            right: 32px;
+            bottom: 32px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: none;
+            box-shadow: none;
+            border-radius: 0;
+            padding: 0;
+        }
+        .page-arrow {
+            background: none;
+            border: none;
+            color: #2d3a3a;
+            font-size: 1.7em;
+            cursor: pointer;
+            padding: 0 8px;
+            transition: color 0.2s;
+        }
+        .page-arrow:disabled {
+            color: #cfd8dc;
+            cursor: default;
+        }
+        .page-indicator {
+            font-size: 1.1em;
+            color: #2d3a3a;
+            min-width: 48px;
+            text-align: center;
+            font-family: inherit;
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            padding: 0 12px;
+        }
+
+        @keyframes rotatePulse {
+            0% { transform: scale(1) rotate(0deg);}
+            40% { transform: scale(1.08) rotate(6deg);}
+            60% { transform: scale(1.08) rotate(-6deg);}
+            100% { transform: scale(1) rotate(0deg);}
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .main-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 4px 24px rgba(96, 169, 23, 0.18);
+            margin-bottom: 32px;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border: 4px solid #e6f4ea;
+            display: block;
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .main-logo:hover, .main-logo:focus {
+            animation: rotatePulse 0.7s;
+        }
+
+        @media (max-width: 600px) {
+            .main-logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 20px;
+                border-width: 2px;
+            }
+        }
+        .bs-title {
+            width: 90%;
+            max-width: 340px;
+            margin: 0 auto 28px auto;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+        @media (max-width: 600px) {
+            .bs-title {
+                max-width: 180px;
+                margin-bottom: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO/INTRO SEKCIJA -->
+    <div class="intro-flex" id="heroSection">
+        
+        <div class="intro-content">
+            <img src="logo.png" alt="Logo" class="main-logo">
+            <img src="business-secrets.png" alt="Business Secrets" class="bs-title">
+            <h1>Was für ein Verhandlungstyp sind Sie?</h1>
+            <p>Mit diesem kostenlosen Verhandlungstyp-Test finden Sie in nur 5 Minuten heraus, wo Ihre Stärken und Potentiale liegen. Schon in Ihrer nächsten Verhandlung werden Sie von diesen Erkenntnissen profitieren.</p>
+            <button class="btn" onclick="goToFormSection()">Verhandlungstyp GRATIS testen!</button>
+        </div>
+    </div>
+
+    <!-- FORMA ZA PODATKE -->
+    <div class="container fade" id="formSection" style="display:none;">
+        <div class="page-header-content">
+            <img src="logo.png" alt="Logo" class="main-logo">
+            <img src="business-secrets.png" alt="Business Secrets" class="bs-title">
+            <h2>Ihre Kontaktdaten</h2>
+        </div>
+        <!-- Progress Bar for Form Section - Temporarily Commented Out -->
+        <!--
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        -->
+        <form id="userForm">
+            <input type="text" name="vorname" placeholder="Vorname" required><br>
+            <input type="text" name="nachname" placeholder="Nachname" required><br>
+            <input type="email" name="email" placeholder="E-Mail" required><br>
+            <input type="text" name="unternehmen" placeholder="Unternehmen (optional)"><br>
+            <input type="text" name="position" placeholder="Position (optional)"><br>
+            <label style="font-size:0.9em;display:block;margin:10px 0;">
+                <input type="checkbox" name="datenschutz" required> Ich stimme der Datenschutzerklärung zu.
+            </label>
+            <button class="btn" type="button" id="weiterButton">Weiter</button>
+        </form>
+    </div>
+
+    <!-- SEKCIJA SA PITANJIMA (nova, kompletna) -->
+    <div class="container fade" id="quizSection" style="display:none;">
+        <div class="page-header-content">
+            <img src="logo.png" alt="Logo" class="main-logo">
+            <img src="business-secrets.png" alt="Business Secrets" class="bs-title">
+            <h2>Fragen</h2>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <form id="quizForm">
+            <div class="question active">
+                <label>1. Wie oft verhandeln Sie beruflich?</label>
+                <label class="answer-option"><input type="radio" name="frage1" value="Täglich" required><span>Täglich</span></label>
+                <label class="answer-option"><input type="radio" name="frage1" value="Wöchentlich"><span>Wöchentlich</span></label>
+                <label class="answer-option"><input type="radio" name="frage1" value="Monatlich"><span>Monatlich</span></label>
+                <label class="answer-option"><input type="radio" name="frage1" value="Selten"><span>Selten</span></label>
+            </div>
+            <div class="question">
+                <label>2. Wie schätzen Sie Ihre Verhandlungsstärke ein?</label>
+                <label class="answer-option"><input type="radio" name="frage2" value="Sehr gut" required><span>Sehr gut</span></label>
+                <label class="answer-option"><input type="radio" name="frage2" value="Gut"><span>Gut</span></label>
+                <label class="answer-option"><input type="radio" name="frage2" value="Durchschnittlich"><span>Durchschnittlich</span></label>
+                <label class="answer-option"><input type="radio" name="frage2" value="Verbesserungswürdig"><span>Verbesserungswürdig</span></label>
+            </div>
+            <div class="question">
+                <label>3. Wie bereiten Sie sich auf Verhandlungen vor?</label>
+                <label class="answer-option"><input type="checkbox" name="frage3" value="Recherche"><span>Recherche</span></label>
+                <label class="answer-option"><input type="checkbox" name="frage3" value="Gespräche mit Kollegen"><span>Gespräche mit Kollegen</span></label>
+                <label class="answer-option"><input type="checkbox" name="frage3" value="Keine besondere Vorbereitung"><span>Keine besondere Vorbereitung</span></label>
+                <label class="answer-option"><input type="checkbox" name="frage3" value="Verhandlungstraining"><span>Verhandlungstraining</span></label>
+            </div>
+            <div class="question">
+                <label>4. Was ist Ihnen bei Verhandlungen am wichtigsten?</label>
+                <label class="answer-option"><input type="radio" name="frage4" value="Ein gutes Ergebnis für beide Seiten" required><span>Ein gutes Ergebnis für beide Seiten</span></label>
+                <label class="answer-option"><input type="radio" name="frage4" value="Das beste Ergebnis für mich"><span>Das beste Ergebnis für mich</span></label>
+                <label class="answer-option"><input type="radio" name="frage4" value="Schnelle Einigung"><span>Schnelle Einigung</span></label>
+                <label class="answer-option"><input type="radio" name="frage4" value="Langfristige Beziehung"><span>Langfristige Beziehung</span></label>
+            </div>
+            <div class="question">
+                <label>5. Welche Verhandlungstechniken nutzen Sie?</label>
+                <input type="text" name="frage5" placeholder="Ihre Antwort...">
+            </div>
+            <div class="question">
+                <label>6. Wie wichtig ist Ihnen eine Win-Win-Situation in Verhandlungen?</label>
+                <label class="answer-option"><input type="radio" name="frage6" value="Sehr wichtig" required><span>Sehr wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage6" value="Wichtig"><span>Wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage6" value="Eher unwichtig"><span>Eher unwichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage6" value="Unwichtig"><span>Unwichtig</span></label>
+            </div>
+            <div class="question">
+                <label>7. Wie reagieren Sie auf aggressive Verhandlungstaktiken?</label>
+                <label class="answer-option"><input type="radio" name="frage7" value="Gegenangriff" required><span>Gegenangriff</span></label>
+                <label class="answer-option"><input type="radio" name="frage7" value="Ruhig bleiben und ignorieren"><span>Ruhig bleiben und ignorieren</span></label>
+                <label class="answer-option"><input type="radio" name="frage7" value="Versuchen, die Situation zu deeskalieren"><span>Versuchen, die Situation zu deeskalieren</span></label>
+                <label class="answer-option"><input type="radio" name="frage7" value="Verhandlung abbrechen"><span>Verhandlung abbrechen</span></label>
+            </div>
+            <div class="question">
+                <label>8. Was ist Ihre grösste Stärke als Verhandler?</label>
+                <label class="answer-option"><input type="radio" name="frage8" value="Empathie" required><span>Empathie</span></label>
+                <label class="answer-option"><input type="radio" name="frage8" value="Logik und Rationalität"><span>Logik und Rationalität</span></label>
+                <label class="answer-option"><input type="radio" name="frage8" value="Hartnäckigkeit"><span>Hartnäckigkeit</span></label>
+                <label class="answer-option"><input type="radio" name="frage8" value="Kommunikationsfähigkeit"><span>Kommunikationsfähigkeit</span></label>
+            </div>
+            <div class="question">
+                <label>9. Wie gehen Sie mit Rückschlägen in Verhandlungen um?</label>
+                <label class="answer-option"><input type="radio" name="frage9" value="Frustriert" required><span>Frustriert</span></label>
+                <label class="answer-option"><input type="radio" name="frage9" value="Analysieren und anpassen"><span>Analysieren und anpassen</span></label>
+                <label class="answer-option"><input type="radio" name="frage9" value="Aufgeben"><span>Aufgeben</span></label>
+                <label class="answer-option"><input type="radio" name="frage9" value="Neue Strategie entwickeln"><span>Neue Strategie entwickeln</span></label>
+            </div>
+            <div class="question">
+                <label>10. Wie wichtig ist Ihnen die Beziehung zum Verhandlungspartner nach der Verhandlung?</label>
+                <label class="answer-option"><input type="radio" name="frage10" value="Sehr wichtig" required><span>Sehr wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage10" value="Wichtig"><span>Wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage10" value="Eher unwichtig"><span>Eher unwichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage10" value="Unwichtig"><span>Unwichtig</span></label>
+            </div>
+            <div class="question">
+                <label>11. Wie oft fühlen Sie sich unter Druck in Verhandlungen?</label>
+                <label class="answer-option"><input type="radio" name="frage11" value="Sehr oft" required><span>Sehr oft</span></label>
+                <label class="answer-option"><input type="radio" name="frage11" value="Manchmal"><span>Manchmal</span></label>
+                <label class="answer-option"><input type="radio" name="frage11" value="Selten"><span>Selten</span></label>
+                <label class="answer-option"><input type="radio" name="frage11" value="Nie"><span>Nie</span></label>
+            </div>
+            <div class="question">
+                <label>12. Was tun Sie, wenn die Verhandlungen stocken?</label>
+                <label class="answer-option"><input type="radio" name="frage12" value="Machen Sie ein Zugeständnis" required><span>Machen Sie ein Zugeständnis</span></label>
+                <label class="answer-option"><input type="radio" name="frage12" value="Bitten Sie um eine Pause"><span>Bitten Sie um eine Pause</span></label>
+                <label class="answer-option"><input type="radio" name="frage12" value="Ändern Sie Ihre Strategie"><span>Ändern Sie Ihre Strategie</span></label>
+                <label class="answer-option"><input type="radio" name="frage12" value="Drohen Sie mit Abbruch"><span>Drohen Sie mit Abbruch</span></label>
+            </div>
+            <div class="question">
+                <label>13. Wie wichtig ist Ihnen die Glaubwürdigkeit in Verhandlungen?</label>
+                <label class="answer-option"><input type="radio" name="frage13" value="Äusserst wichtig" required><span>Äusserst wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage13" value="Wichtig"><span>Wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage13" value="Weniger wichtig"><span>Weniger wichtig</span></label>
+                <label class="answer-option"><input type="radio" name="frage13" value="Unwichtig"><span>Unwichtig</span></label>
+            </div>
+            <div class="question">
+                <label>14. Wie gehen Sie mit Emotionen (eigenen und fremden) in Verhandlungen um?</label>
+                <label class="answer-option"><input type="radio" name="frage14" value="Ignorieren Sie diese" required><span>Ignorieren Sie diese</span></label>
+                <label class="answer-option"><input type="radio" name="frage14" value="Versuchen Sie, sie zu kontrollieren"><span>Versuchen Sie, sie zu kontrollieren</span></label>
+                <label class="answer-option"><input type="radio" name="frage14" value="Nutzen Sie sie taktisch"><span>Nutzen Sie sie taktisch</span></label>
+                <label class="answer-option"><input type="radio" name="frage14" value="Berücksichtigen Sie sie empathisch"><span>Berücksichtigen Sie sie empathisch</span></label>
+            </div>
+            <div class="question">
+                <label>15. Was ist Ihr primäres Ziel in den meisten Verhandlungen?</label>
+                <label class="answer-option"><input type="radio" name="frage15" value="Einen Deal abschliessen" required><span>Einen Deal abschliessen</span></label>
+                <label class="answer-option"><input type="radio" name="frage15" value="Die Beziehung zum Partner stärken"><span>Die Beziehung zum Partner stärken</span></label>
+                <label class="answer-option"><input type="radio" name="frage15" value="Ihre Position durchsetzen"><span>Ihre Position durchsetzen</span></label>
+                <label class="answer-option"><input type="radio" name="frage15" value="Kompromiss finden"><span>Kompromiss finden</span></label>
+            </div>
+            <button class="btn" type="button" id="nextButton">Nächste Frage</button>
+            <button class="btn" type="submit" id="submitButton" style="display:none;">Abschließen</button>
+        </form>
+    </div>
+
+    <!-- ZAHVALNICA -->
+    <div class="container fade" id="thankYouSection" style="display:none;">
+        <div class="page-header-content">
+            <img src="logo.png" alt="Logo" class="main-logo">
+            <img src="business-secrets.png" alt="Business Secrets" class="bs-title">
+            <h2>Vielen Dank für Ihre Teilnahme!</h2>
+        </div>
+        <p>Ihre Antworten wurden erfolgreich übermittelt. Sie erhalten in Kürze Ihre Ergebnisse per E-Mail. <E-Mail class=""></E-Mail></p>
+    </div>
+
+    <div class="page-nav">
+        <button class="page-arrow" id="prevPage" title="Prethodna">&#8592;</button>
+        <span class="page-indicator" id="pageIndicator">1 / 5</span>
+        <button class="page-arrow" id="nextPage" title="Sledeća">&#8594;</button>
+    </div>
+
+    <script>
+        function fadeOut(element, callback) {
+            element.classList.add('fade-out');
+            setTimeout(() => {
+                element.style.display = 'none';
+                element.classList.remove('fade-out');
+                if (callback) callback();
+            }, 800);
+        }
+
+        function fadeIn(element) {
+            element.style.display = 'block';
+            element.classList.add('fade');
+        }
+
+        function goToFormSection() {
+            fadeOut(document.getElementById('heroSection'), () => {
+                fadeIn(document.getElementById('formSection'));
+                updatePageIndicator();
+            });
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Sprečava podrazumevano slanje forme
+        });
+
+        document.getElementById('weiterButton').addEventListener('click', function() {
+            const userForm = document.getElementById('userForm');
+            if (!userForm.checkValidity()) {
+                userForm.reportValidity(); // Prikazuje poruke o validaciji
+                return;
+            }
+
+            // Sada je popravljen prelazak na kviz sekciju
+            fadeOut(document.getElementById('formSection'), () => {
+                fadeIn(document.getElementById('quizSection'));
+                updateProgressBar();
+                currentSection = sections.indexOf(document.getElementById('quizSection'));
+                updatePageIndicator();
+            });
+        });
+
+        // Quiz navigation
+        const questions = document.querySelectorAll('#quizSection .question');
+        let currentQuestion = 0;
+        document.getElementById('nextButton').addEventListener('click', function() {
+            const currentQuestionElement = questions[currentQuestion];
+            const requiredInputs = currentQuestionElement.querySelectorAll('[required]');
+            let allInputsValid = true;
+            for (const input of requiredInputs) {
+                if (!input.checkValidity()) {
+                    allInputsValid = false;
+                    input.reportValidity(); // Show browser validation message
+                    break;
+                }
+            }
+
+            if (allInputsValid) {
+                if (currentQuestion < questions.length - 1) {
+                    questions[currentQuestion].classList.remove('active');
+                    currentQuestion++;
+                    questions[currentQuestion].classList.add('active');
+                    updateProgressBar();
+                    updatePageIndicator(); // Call to update indicator
+                    if (currentQuestion === questions.length - 1) {
+                        document.getElementById('nextButton').style.display = 'none';
+                        document.getElementById('submitButton').style.display = 'inline-block';
+                    }
+                }
+            }
+        });
+
+        document.getElementById('quizForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!this.checkValidity()) { // Ensure all quiz questions (if required) are valid
+                this.reportValidity(); // Show browser validation messages
+                return;
+            }
+
+            // Privremeno preskakanje slanja na submit.php za testiranje
+            // const formData = new FormData(this);
+            // const response = await fetch('submit.php', {
+            //     method: 'POST',
+            //     body: formData
+            // });
+
+            // const result = await response.json();
+            // if (result.status === 'success') {
+                fadeOut(document.getElementById('quizSection'), () => {
+                    fadeIn(document.getElementById('thankYouSection'));
+                    currentSection = sections.indexOf(document.getElementById('thankYouSection'));
+                    updatePageIndicator();
+                });
+            // } else {
+            //     console.error('Error submitting quiz:', result.message);
+            //     alert('Došlo je do greške prilikom slanja testa. Molimo pokušajte ponovo.');
+            // }
+        });
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Define sections in order
+        const sections = [
+            document.getElementById('heroSection'),
+            document.getElementById('formSection'),
+            document.getElementById('quizSection'),
+            document.getElementById('thankYouSection')
+        ];
+        let currentSection = 0;
+
+        function updatePageIndicator() {
+            const pageIndicator = document.getElementById('pageIndicator');
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+
+            if (sections[currentSection].id === 'quizSection') {
+                pageIndicator.textContent = `Pitanje ${currentQuestion + 1} / ${questions.length}`;
+                prevButton.disabled = (currentQuestion === 0 && currentSection === sections.indexOf(document.getElementById('quizSection')));
+                nextButton.disabled = (currentQuestion === questions.length - 1);
+            } else {
+                pageIndicator.textContent = `${currentSection + 1} / ${sections.length}`;
+                prevButton.disabled = (currentSection === 0);
+                nextButton.disabled = (currentSection === sections.length - 1);
+            }
+        }
+
+        document.getElementById('prevPage').onclick = () => {
+            if (sections[currentSection].id === 'quizSection') {
+                if (currentQuestion > 0) {
+                    questions[currentQuestion].classList.remove('active');
+                    currentQuestion--;
+                    questions[currentQuestion].classList.add('active');
+                    updateProgressBar();
+                    updatePageIndicator();
+                } else {
+                    fadeOut(document.getElementById('quizSection'), () => {
+                        fadeIn(document.getElementById('formSection'));
+                        currentSection = sections.indexOf(document.getElementById('formSection'));
+                        updatePageIndicator();
+                    });
+                }
+            } else {
+                showSection(Math.max(0, currentSection - 1));
+                updatePageIndicator();
+            }
+        };
+
+        document.getElementById('nextPage').onclick = () => {
+            if (sections[currentSection].id === 'quizSection') {
+                const currentQuestionElement = questions[currentQuestion];
+                const requiredInputs = currentQuestionElement.querySelectorAll('[required]');
+                let allInputsValid = true;
+                for (const input of requiredInputs) {
+                    if (!input.checkValidity()) {
+                        allInputsValid = false;
+                        input.reportValidity();
+                        break;
+                    }
+                }
+
+                if (allInputsValid) {
+                    if (currentQuestion < questions.length - 1) {
+                        questions[currentQuestion].classList.remove('active');
+                        currentQuestion++;
+                        questions[currentQuestion].classList.add('active');
+                        updateProgressBar();
+                        updatePageIndicator();
+                        if (currentQuestion === questions.length - 1) {
+                            document.getElementById('nextButton').style.display = 'none';
+                            document.getElementById('submitButton').style.display = 'inline-block';
+                        } else {
+                            document.getElementById('nextButton').style.display = 'inline-block';
+                            document.getElementById('submitButton').style.display = 'none';
+                        }
+                    } else {
+                        const quizForm = document.getElementById('quizForm');
+                        if (quizForm.checkValidity()) {
+                            fadeOut(document.getElementById('quizSection'), () => {
+                                fadeIn(document.getElementById('thankYouSection'));
+                                currentSection = sections.indexOf(document.getElementById('thankYouSection'));
+                                updatePageIndicator();
+                            });
+                        } else {
+                            quizForm.reportValidity();
+                        }
+                    }
+                }
+            } else {
+                if (sections[currentSection].id === 'formSection') {
+                    const userForm = document.getElementById('userForm');
+                    if (!userForm.checkValidity()) {
+                        userForm.reportValidity();
+                        return;
+                    }
+                }
+                showSection(Math.min(sections.length - 1, currentSection + 1));
+                updatePageIndicator();
+            }
+        };
+
+        function showSection(index) {
+            sections.forEach((sec, i) => {
+                sec.style.display = (i === index) ? 'block' : 'none';
+            });
+            currentSection = index;
+            document.getElementById('pageIndicator').textContent = (index + 1) + ' / ' + sections.length;
+            document.getElementById('prevPage').disabled = (index === 0);
+            document.getElementById('nextPage').disabled = (index === sections.length - 1);
+        }
+
+        showSection(0);
+    </script>
+
+</body>
+</html>
